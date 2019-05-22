@@ -9,7 +9,7 @@ GAME RULES:
 
 */
 
-var scores, roundScore, activePlayer, gamePlaying;
+var scores, roundScore, activePlayer, gamePlaying, tossDone;
 
 init();
 
@@ -19,6 +19,7 @@ function init()
     roundScore=0;
     activePlayer=0;
     gamePlaying=true;
+    tossDone=false;
 
     document.getElementById('current-0').textContent = '0';
     document.getElementById('current-1').textContent = '0';
@@ -38,7 +39,7 @@ document.querySelector('.dice').style.display = 'none';
 
 document.querySelector('.btn-roll').addEventListener('click', function() {
 
-    if (gamePlaying){
+    if (gamePlaying && tossDone){
         var dice = Math.floor(Math.random() * 6 ) + 1;
     
 
@@ -58,17 +59,19 @@ document.querySelector('.btn-roll').addEventListener('click', function() {
 
 document.querySelector('.btn-hold').addEventListener('click', function() {
 
-    if (gamePlaying){
+    if (gamePlaying && tossDone){
         scores[activePlayer]+=roundScore;
         document.getElementById('score-'+activePlayer).textContent = scores[activePlayer];
     
-        if(scores[activePlayer]>=100)
+        if(scores[activePlayer]>=20)
         {
             document.querySelector('.player-'+activePlayer+'-panel').classList.add('winner');
             document.querySelector('.player-'+activePlayer+'-panel').classList.remove('active');
             document.getElementById('name-'+activePlayer).textContent = 'Winner!';
+            document.getElementById('name-'+(1-activePlayer)).textContent = 'Oops!';
             document.querySelector('.dice').style.display = 'none';
             gamePlaying=false;
+            tossDone=false;
     
         }
         else{
@@ -91,3 +94,17 @@ function nextPlayer(){
 
     document.querySelector('.dice').style.display = 'none';
 }
+
+document.querySelector('.btn-toss').addEventListener('click', function(){
+    if(!tossDone && gamePlaying){
+        var toss = Math.floor(Math.random()*2);
+        activePlayer=toss;
+        document.querySelector('.player-0-panel').classList.remove('active');
+        document.querySelector('.player-1-panel').classList.remove('active');
+        document.querySelector('.player-'+activePlayer+'-panel').classList.add('active');
+        document.getElementById('name-'+activePlayer).textContent = 'Player '+(1+activePlayer)+'(Won Toss)';
+        document.getElementById('name-'+(1-activePlayer)).textContent = 'Player '+(1-activePlayer+1)+'(Lost Toss)';
+        tossDone=true;
+    }
+
+});
